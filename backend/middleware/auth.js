@@ -1,0 +1,17 @@
+import jwt from "jsonwebtoken";
+
+export const authUser = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "User not authenticated." });
+    }
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded :", decoded);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(400).send("Invalid token");
+  }
+};
